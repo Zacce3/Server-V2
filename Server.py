@@ -128,7 +128,7 @@ def index():
     <!DOCTYPE html>
     <html lang="en">
     <head>
-        <title>Real-Time Actuator Control</title>
+        <title>Window Control System</title>
         <style>
             body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
             h1 { color: #333; }
@@ -141,7 +141,7 @@ def index():
         </style>
     </head>
     <body>
-        <h1>Real-Time Actuator Control</h1>
+        <h1>Window Control System</h1>
         <!-- Display sensor data -->
         <div class="data">
             <p>CO2 Concentration: <span id="co2">{{ co2 }}</span></p>
