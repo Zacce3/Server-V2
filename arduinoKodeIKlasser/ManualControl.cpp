@@ -43,20 +43,7 @@ bool ManuelControl::handleSystemToggle(){
 
 // In your Arduino code
 
-void ManuelControl::handleThresholdUpdate() {
-    static String inputString = ""; // A String to hold incoming data
-    while (Serial.available() > 0) {
-        char inChar = (char)Serial.read();  // Read a character
-        inputString += inChar;              // Append to inputString
-        if (inChar == '\n') {               // If the incoming character is a newline
-            inputString.trim();             // Remove leading and trailing whitespace
-            if (inputString.startsWith("T,")) {
-                processThresholdCommand(inputString);
-            }
-            inputString = ""; // Clear the string for the next command
-        }
-    }
-}
+
 
 void ManuelControl::processThresholdCommand(String input) {
     // Remove the 'T,' prefix

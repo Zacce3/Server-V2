@@ -11,8 +11,7 @@ public:
     void handleManualToggle(bool &windowStatus);
     bool handleSystemToggle();
 
-//Måske lave en helt ny class til disse
-    void handleThresholdUpdate();
+//Måske lave en helt ny class til disse;
     void processThresholdCommand(String input);
 
     int systemLight = 5; //Indicated with a green light

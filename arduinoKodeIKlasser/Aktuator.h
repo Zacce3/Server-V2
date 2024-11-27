@@ -15,7 +15,6 @@ public:
 
 
     void handleSerialCommands(); // burde denne også stå her?
-    void handleWindowCommands(); //lidt i tvivl om den burde stå her eller et andet sted
     void decideWindowStatus( SensorData &sensorData); //skal den være her eller i en af de andre filer
 
 

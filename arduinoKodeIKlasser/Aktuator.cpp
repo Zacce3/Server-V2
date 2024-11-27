@@ -26,15 +26,13 @@ void Aktuator::openWindow(bool &windowStatus) {
     analogWrite(ENA, 255); // Full speed
 
     while (digitalRead(openWindowSwitch) == LOW) {
-        //manuelControl.handleThresholdUpdate();       // Check for threshold update commands from ManualControl
-        //andleWindowCommands();
-         handleSerialCommands();        // Check for window commands
-        manuelControl.handleManualToggle(windowStatus); // Check for manual toggle from ManualControl // er dette nødvendigt
+       
+               // Check for window commands
         delay(10); // Small delay to prevent CPU overuse
     }
 
     stopMotor();
-    windowStatus = true;
+    
     Serial.println("Window fully opened.");
 }
 
@@ -45,15 +43,13 @@ void Aktuator::closeWindow(bool &windowStatus) {
     analogWrite(ENA, 255); // Full speed
 
     while (digitalRead(closeWindowSwitch) == LOW) {
-        //manuelControl.handleThresholdUpdate();       // Check for threshold update commands from ManualControl
-        //handleWindowCommands(); //er dette også nødvendigt
-        handleSerialCommands();        // Check for window commands
-        manuelControl.handleManualToggle(windowStatus); // Check for manual toggle from ManualControl. // er dette nødvendigt
+       
+   
         delay(10); // Small delay to prevent CPU overuse
     }
 
     stopMotor();
-    windowStatus = false;
+    
     Serial.println("Window fully closed.");
 }
 
@@ -106,18 +102,7 @@ void Aktuator::stopMotor() {
     Serial.println("Motor stopped.");
 }
 
-void Aktuator::handleWindowCommands() {
-    if (Serial.available() > 0) {
-        char command = Serial.read();
-        if (command == 'O' || command == 'o') {
-            openWindow(sensorData.windowStatus);
-        } else if (command == 'C' || command == 'c') {
-            closeWindow(sensorData.windowStatus);
-        } else {
-            Serial.println("Invalid command. Use 'O' for open, 'C' for close.");
-        }
-    }
-}
+
 
 void Aktuator::decideWindowStatus( SensorData &sensorData) {
     // Validate sensor data
