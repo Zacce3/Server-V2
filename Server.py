@@ -184,7 +184,7 @@ def index():
             }
             setInterval(fetchData, 2000); // Fetch data every 2 seconds
         </script>
-        <p>Access the app at: <strong>http://{{ ip }}:5000</strong></p>
+        <p>Access the app at: <strong>http://{{ ip }}:8000</strong></p>
     </body>
     </html>
     """, **sensor_data, ip=get_ip_address())
@@ -292,6 +292,6 @@ def settings():
 
 if __name__ == "__main__":
     ip_address = get_ip_address()
-    print(f"Server is running. Access it at: http://{ip_address}:5000")
+    print(f"Server is running. Access it at: http://{ip_address}:8000")
     app.run(host="0.0.0.0", port=8000, debug=True, use_reloader=False)
 
