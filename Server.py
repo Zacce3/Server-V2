@@ -28,7 +28,7 @@ sensor_data = {
 
 # Serial connection setup (change 'COM4' to your actual port)
 try:
-    ser = serial.Serial('COM4', 9600, timeout=1)
+    ser = serial.Serial('/dev/ttyACM0', 9600, timeout=1)
     time.sleep(2)  # Allow time for the serial connection to initialize
     atexit.register(ser.close)
 except serial.SerialException as e:
@@ -157,7 +157,7 @@ def index():
             </form>
             <!-- Timer form -->
             <form method="post" style="display:inline;">
-                <label for="duration">Set Timer to Close Window (minutes):</label>
+                <label for="duration">Set Timer to Close Window (seconds):</label>
                 <input type="text" name="duration" pattern="\d+" required>
                 <button type="submit" name="set_timer">Set Timer</button>
             </form>
@@ -293,5 +293,5 @@ def settings():
 if __name__ == "__main__":
     ip_address = get_ip_address()
     print(f"Server is running. Access it at: http://{ip_address}:5000")
-    app.run(host="0.0.0.0", port=5000, debug=True, use_reloader=False)
+    app.run(host="0.0.0.0", port=8000, debug=True, use_reloader=False)
 
