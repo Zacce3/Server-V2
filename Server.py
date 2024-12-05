@@ -16,7 +16,6 @@ sensor_data = {
     "co2": "No data",
     "temperature": "No data",
     "humidity": "No data",
-    "distance": "No data",
     "window_state": "Unknown",
     "co2_open_threshold": "1000.0",
     "co2_close_threshold": "800.0",
@@ -51,20 +50,18 @@ def read_serial():
                             line = line.strip()
                             if line.startswith("CO2:"):
                                 parts = line.split(",")
-                                if len(parts) >= 5:
+                                if len(parts) >= 4:
                                     # Function to sanitize numerical strings
                                     def sanitize_num_str(s):
                                         return s.strip().replace(',', '.')
                                     co2_str = sanitize_num_str(parts[0].split(":")[1])
                                     temp_str = sanitize_num_str(parts[1].split(":")[1])
                                     humidity_str = sanitize_num_str(parts[2].split(":")[1])
-                                    distance_str = sanitize_num_str(parts[3].split(":")[1])
                                     with sensor_data_lock:
                                         sensor_data["co2"] = co2_str
                                         sensor_data["temperature"] = temp_str
                                         sensor_data["humidity"] = humidity_str
-                                        sensor_data["distance"] = distance_str
-                                        sensor_data["window_state"] = "Open" if "Open" in parts[4] else "Closed"
+                                        sensor_data["window_state"] = "Open" if "Open" in parts[3] else "Closed"
                             elif line.startswith("Thresholds:"):
                                 # Parse thresholds from the serial output
                                 thresholds = line[len("Thresholds:"):].split(",")
@@ -157,7 +154,7 @@ def index():
             </form>
             <!-- Timer form -->
             <form method="post" style="display:inline;">
-                <label for="duration">Set Timer to Close Window (minutes):</label>
+                <label for="duration">Set Timer to Close Window (seconds):</label>
                 <input type="text" name="duration" pattern="\d+" required>
                 <button type="submit" name="set_timer">Set Timer</button>
             </form>
@@ -198,35 +195,31 @@ def data():
 def settings():
     if request.method == 'POST':
         # Collect the updated thresholds from the form
-        co2_open_threshold = request.form.get('co2_open_threshold', sensor_data["co2_open_threshold"])
-        co2_close_threshold = request.form.get('co2_close_threshold', sensor_data["co2_close_threshold"])
-        temp_open_threshold = request.form.get('temp_open_threshold', sensor_data["temp_open_threshold"])
-        temp_close_threshold = request.form.get('temp_close_threshold', sensor_data["temp_close_threshold"])
-        humidity_open_threshold = request.form.get('humidity_open_threshold', sensor_data["humidity_open_threshold"])
-        humidity_close_threshold = request.form.get('humidity_close_threshold', sensor_data["humidity_close_threshold"])
+        def getThresholds():
+            co2_open_threshold = request.form.get('co2_open_threshold', sensor_data["co2_open_threshold"])
+            co2_close_threshold = request.form.get('co2_close_threshold', sensor_data["co2_close_threshold"])
+            temp_open_threshold = request.form.get('temp_open_threshold', sensor_data["temp_open_threshold"])
+            temp_close_threshold = request.form.get('temp_close_threshold', sensor_data["temp_close_threshold"])
+            humidity_open_threshold = request.form.get('humidity_open_threshold', sensor_data["humidity_open_threshold"])
+            humidity_close_threshold = request.form.get('humidity_close_threshold', sensor_data["humidity_close_threshold"])
+            return co2_open_threshold, co2_close_threshold, temp_open_threshold, temp_close_threshold, humidity_open_threshold, humidity_close_threshold
         
-        # Replace commas with periods in all threshold values
-        co2_open_threshold = co2_open_threshold.replace(',', '.')
-        co2_close_threshold = co2_close_threshold.replace(',', '.')
-        temp_open_threshold = temp_open_threshold.replace(',', '.')
-        temp_close_threshold = temp_close_threshold.replace(',', '.')
-        humidity_open_threshold = humidity_open_threshold.replace(',', '.')
-        humidity_close_threshold = humidity_close_threshold.replace(',', '.')
-        
-        # Update local sensor_data dictionary
+        a,b,c,d,e,f = getThresholds()
         sensor_data.update({
-            "co2_open_threshold": co2_open_threshold,
-            "co2_close_threshold": co2_close_threshold,
-            "temp_open_threshold": temp_open_threshold,
-            "temp_close_threshold": temp_close_threshold,
-            "humidity_open_threshold": humidity_open_threshold,
-            "humidity_close_threshold": humidity_close_threshold
+            "co2_open_threshold": a,   
+            "co2_close_threshold": b,
+            "temp_open_threshold": c,  
+            "temp_close_threshold": d,
+            "humidity_open_threshold": e,
+            "humidity_close_threshold": f  
         })
+            
+            
         
         # Send updated thresholds to Arduino
         if ser:
             # Build the command string
-            thresholds_string = f"T,{co2_open_threshold},{co2_close_threshold},{temp_open_threshold},{temp_close_threshold},{humidity_open_threshold},{humidity_close_threshold}\n"
+            thresholds_string = f"T,{a},{b},{c},{d},{e},{f}\n"
             ser.write(thresholds_string.encode('utf-8'))
             
             print(f"Sent thresholds to Arduino: {thresholds_string}")
