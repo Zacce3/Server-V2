@@ -1,13 +1,14 @@
-# Updated Flask server with timer functionality
+#Code lines based on or gotten from AI is marked with "##" at the end.
+#Whole functions based on or gotten from AI will be indicated by small text before the funntion. 
 
-from flask import Flask, jsonify, render_template_string, request
-import serial
-import threading
-import time
-import socket
-import atexit
+from flask import Flask, jsonify, render_template_string, request##
+import serial##
+import threading##
+import time##
+import socket##
+import atexit##
 
-sensor_data_lock = threading.Lock()
+sensor_data_lock = threading.Lock() ##
 
 app = Flask(__name__)
 
@@ -25,11 +26,11 @@ sensor_data = {
     "humidity_close_threshold": "60.0"
 }
 
-# Serial connection setup (change 'COM4' to your actual port)
+
 try:
-    ser = serial.Serial('COM4', 9600, timeout=1)
+    ser = serial.Serial('/dev/ttyACM0', 9600, timeout=0)
     time.sleep(2)  # Allow time for the serial connection to initialize
-    atexit.register(ser.close)
+    atexit.register(ser.close)##
 except serial.SerialException as e:
     print(f"Serial connection failed: {e}")
     ser = None
@@ -42,22 +43,22 @@ def read_serial():
         if ser:
             try:
                 while ser.in_waiting > 0:
-                    buffer += ser.read(ser.in_waiting).decode('utf-8', errors='ignore')
+                    buffer += ser.read(ser.in_waiting).decode('utf-8', errors='ignore')##
                     if '\n' in buffer:
                         lines = buffer.split('\n')
-                        buffer = lines[-1]  # Last part is incomplete, keep it in buffer
-                        for line in lines[:-1]:
+                        buffer = lines[-1]##
+                        for line in lines[:-1]:##
                             line = line.strip()
                             if line.startswith("CO2:"):
                                 parts = line.split(",")
                                 if len(parts) >= 4:
                                     # Function to sanitize numerical strings
-                                    def sanitize_num_str(s):
-                                        return s.strip().replace(',', '.')
-                                    co2_str = sanitize_num_str(parts[0].split(":")[1])
-                                    temp_str = sanitize_num_str(parts[1].split(":")[1])
-                                    humidity_str = sanitize_num_str(parts[2].split(":")[1])
-                                    with sensor_data_lock:
+                                    def sanitize_num_str(s):##
+                                        return s.strip().replace(',', '.')##
+                                    co2_str = sanitize_num_str(parts[0].split(":")[1])##
+                                    temp_str = sanitize_num_str(parts[1].split(":")[1])##
+                                    humidity_str = sanitize_num_str(parts[2].split(":")[1])##
+                                    with sensor_data_lock:##
                                         sensor_data["co2"] = co2_str
                                         sensor_data["temperature"] = temp_str
                                         sensor_data["humidity"] = humidity_str
@@ -66,23 +67,28 @@ def read_serial():
                                 # Parse thresholds from the serial output
                                 thresholds = line[len("Thresholds:"):].split(",")
                                 if len(thresholds) == 6:
-                                    with sensor_data_lock:
+                                    with sensor_data_lock:##
                                         sensor_data["co2_open_threshold"] = thresholds[0].strip()
                                         sensor_data["co2_close_threshold"] = thresholds[1].strip()
                                         sensor_data["temp_open_threshold"] = thresholds[2].strip()
                                         sensor_data["temp_close_threshold"] = thresholds[3].strip()
                                         sensor_data["humidity_open_threshold"] = thresholds[4].strip()
                                         sensor_data["humidity_close_threshold"] = thresholds[5].strip()
-            except Exception as e:
-                print(f"Error reading serial: {e}")
-        time.sleep(0.1)
+            except Exception as e:##
+                print(f"Error reading serial: {e}")##
+        time.sleep(0.1)##
 
 # Start the serial reading in a separate thread
+
+##Function based on or gotten from AI ##
 if ser:
     serial_thread = threading.Thread(target=read_serial, daemon=True)
     serial_thread.start()
 
+
 # Function to get the current IP address of the PC
+
+##Function based on or gotten from AI##
 def get_ip_address():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
@@ -95,6 +101,8 @@ def get_ip_address():
         s.close()
     return ip
 
+
+##whole function based on or gotten from AI##
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
@@ -102,7 +110,7 @@ def index():
             # Handle 'O' (Open) and 'C' (Close) commands
             command = request.form.get('command')
             if ser and command in ['O', 'C']:
-                ser.write((command + '\n').encode('utf-8'))
+                ser.write((command + '\n').encode('utf-8')
         elif 'set_timer' in request.form:
             # Handle timer command
             duration = request.form.get('duration', '0').strip()
@@ -186,11 +194,16 @@ def index():
     </html>
     """, **sensor_data, ip=get_ip_address())
 
+
+##whole function based on or gotten from AI##
 @app.route('/data')
 def data():
     with sensor_data_lock:
         return jsonify(sensor_data)
 
+
+
+##whole function based on or gotten from AI##
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
     if request.method == 'POST':
