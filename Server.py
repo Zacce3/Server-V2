@@ -110,7 +110,7 @@ def index():
             # Handle 'O' (Open) and 'C' (Close) commands
             command = request.form.get('command')
             if ser and command in ['O', 'C']:
-                ser.write((command + '\n').encode('utf-8')
+                ser.write((command + '\n').encode('utf-8'))
         elif 'set_timer' in request.form:
             # Handle timer command
             duration = request.form.get('duration', '0').strip()
